@@ -8,7 +8,6 @@ import (
 	"unicode"
 
 	"github.com/dualm/ethernet-ip/bufferEip"
-	"go.uber.org/zap"
 )
 
 func BytesToInt32(raw []byte, count int) ([]string, error) {
@@ -116,10 +115,4 @@ func TrimMap(s map[string]string) map[string]string {
 	}
 
 	return re
-}
-
-func PrintlnError(err error) {
-	if err != nil {
-		zap.S().Error(err)
-	}
 }
