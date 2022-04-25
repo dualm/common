@@ -14,6 +14,14 @@ func GetInt(conf *viper.Viper, keys ...string) int {
 	return conf.GetInt(makeKey(keys))
 }
 
+func GetStringSlice(conf *viper.Viper, keys ...string) []string {
+	return conf.GetStringSlice(makeKey(keys))
+}
+
+func GetBool(conf *viper.Viper, keys ...string) bool {
+	return conf.GetBool(makeKey(keys))
+}
+
 func makeKey(keys []string) string {
 	k := make([]string, 0, len(keys))
 
