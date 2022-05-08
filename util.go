@@ -6,48 +6,42 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
-
-	"github.com/dualm/ethernet-ip/bufferEip"
 )
 
-func BytesToInt32(raw []byte, count int) ([]string, error) {
-	buffer := bufferEip.New(raw)
+func BytesToInt32(raw []byte) ([]string, error) {
+	buf := NewBuffer(raw)
 
-	var n int32
-	result := make([]string, count)
+	int32s := make([]int32, 0)
+	buf.ReadLittle(int32s)
 
-	for i := 0; i < count; i++ {
-		buffer.ReadLittle(&n)
-		result[i] = strconv.FormatInt(int64(n), 10)
-	}
-
-	if err := buffer.Error(); err != nil {
+	if err := buf.Error(); err != nil {
 		return nil, fmt.Errorf("error in encoding bytes to int32, Error: %w", err)
 	}
 
-	return result, nil
+	s := make([]string, len(int32s))
+	for i := range int32s {
+		s[i] = strconv.Itoa(int(int32s[i]))
+	}
+
+	return s, nil
 }
 
-func BytesToInt16(raw []byte, count int) ([]string, error) {
-	buffer := bufferEip.New(raw)
+func BytesToInt16(raw []byte) ([]string, error) {
+	buf := NewBuffer(raw)
 
-	var n int32
-	result := make([]string, count)
+	ints := make([]int16, 0)
+	buf.ReadLittle(ints)
 
-	for i := 0; i < count; i++ {
-		buffer.ReadLittle(&n)
-		result[i] = strconv.FormatInt(int64(int16(n)), 10)
+	s := make([]string, len(ints))
+	for i := range ints {
+		s[i] = strconv.FormatInt(int64(ints[i]), 10)
 	}
 
-	if err := buffer.Error(); err != nil {
-		return nil, fmt.Errorf("error in encoding bytes to int16, Error: %w", err)
-	}
-
-	return result, nil
+	return s, nil
 }
 
 func BytesToFloat32(raw []byte, count int) ([]string, error) {
-	buffer := bufferEip.New(raw)
+	buffer := NewBuffer(raw)
 
 	var n float32
 	result := make([]string, count)
@@ -66,18 +60,18 @@ func BytesToFloat32(raw []byte, count int) ([]string, error) {
 }
 
 func BytesToAscii(raw []byte, count int, charCount int) ([]string, error) {
-	buffer := bufferEip.New(raw)
+	buf := NewBuffer(raw)
 
 	s := make([]byte, charCount)
 	result := make([]string, count)
 
 	for i := 0; i < count; i++ {
-		buffer.ReadLittle(&s)
+		buf.ReadLittle(&s)
 
 		result[i] = TrimByteToString(s)
 	}
 
-	if err := buffer.Error(); err != nil {
+	if err := buf.Error(); err != nil {
 		return nil, fmt.Errorf("error in encoding bytes to ascii, Error: %w", err)
 	}
 

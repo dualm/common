@@ -11,15 +11,18 @@ import (
 var conf *viper.Viper
 
 func TestGetString(t *testing.T) {
-	var err error
-	conf, err = InitConfig("config")
-	if err != nil {
-		panic(err)
-	}
+	e7conf := func() *viper.Viper {
+		conf, err := InitConfig("e7")
+		if err != nil {
+			panic(err)
+		}
+
+		return conf
+	}()
 	type args struct {
 		conf  *viper.Viper
+		nodes string
 		key   string
-		nodes []string
 	}
 	tests := []struct {
 		name string
@@ -29,16 +32,32 @@ func TestGetString(t *testing.T) {
 		{
 			name: "1",
 			args: args{
-				conf:  conf,
+				conf: func() *viper.Viper {
+					conf, err := InitConfig("config")
+					if err != nil {
+						panic(err)
+					}
+
+					return conf
+				}(),
 				key:   "DbName",
-				nodes: []string{"DB"},
+				nodes: "DB",
 			},
 			want: "svdb",
+		},
+		{
+			name: "2",
+			args: args{
+				conf:  e7conf,
+				key:   "Name",
+				nodes: "StatusCompo",
+			},
+			want: e7conf.GetString("StatusCompo.Name"),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetString(tt.args.conf, tt.args.key, tt.args.nodes...); got != tt.want {
+			if got := GetString(tt.args.conf, tt.args.nodes, tt.args.key); got != tt.want {
 				t.Errorf("GetString() = %v, want %v", got, tt.want)
 			}
 		})
@@ -73,12 +92,20 @@ func Test_makeKey(t *testing.T) {
 				keys: []string{"a", "b", ""},
 			},
 			want: "a.b",
-		}, {
+		},
+		{
 			name: "2",
 			args: args{
 				keys: []string{"a", ""},
 			},
 			want: "a",
+		},
+		{
+			name: "3",
+			args: args{
+				keys: []string{"Name"},
+			},
+			want: "Name",
 		},
 	}
 	for _, tt := range tests {

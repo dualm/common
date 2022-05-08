@@ -6,23 +6,35 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GetString(conf *viper.Viper, key string, nodes ...string) string {
+func GetString(conf *viper.Viper, node, key string) string {
+	nodes := makeNodes(node)
+
 	nodes = append(nodes, key)
+
 	return conf.GetString(makeKey(nodes))
 }
 
-func GetInt(conf *viper.Viper, key string, nodes ...string) int {
+func GetInt(conf *viper.Viper, node, key string) int {
+	nodes := makeNodes(node)
+
 	nodes = append(nodes, key)
+
 	return conf.GetInt(makeKey(nodes))
 }
 
-func GetStringSlice(conf *viper.Viper, key string, nodes ...string) []string {
+func GetStringSlice(conf *viper.Viper, node, key string) []string {
+	nodes := makeNodes(node)
+
 	nodes = append(nodes, key)
+
 	return conf.GetStringSlice(makeKey(nodes))
 }
 
-func GetBool(conf *viper.Viper, key string, nodes ...string) bool {
+func GetBool(conf *viper.Viper, node, key string) bool {
+	nodes := makeNodes(node)
+
 	nodes = append(nodes, key)
+
 	return conf.GetBool(makeKey(nodes))
 }
 
@@ -36,4 +48,16 @@ func makeKey(keys []string) string {
 	}
 
 	return strings.Join(k, ".")
+}
+
+func makeNodes(node string) []string {
+	nodes := make([]string, 0)
+
+	if _n := strings.Split(node, "."); len(_n) >= 1 {
+		nodes = append(nodes, _n...)
+	} else {
+		nodes = append(nodes, node)
+	}
+
+	return nodes
 }

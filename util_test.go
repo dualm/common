@@ -2,6 +2,7 @@ package common
 
 import (
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -19,7 +20,7 @@ func TestTrimByteToString(t *testing.T) {
 			args: args{
 				b: []byte{0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x52, 0x30, 0x32, 0x39},
 			},
-			want: "R-029",
+			want: "R029",
 		},
 	}
 	for _, tt := range tests {
@@ -465,6 +466,91 @@ func TestBytesToAscii(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("BytesToAscii() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBytesToInt32(t *testing.T) {
+	type args struct {
+		raw []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []string
+		wantErr bool
+	}{
+		{
+			name: "1",
+			args: args{
+				raw: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			},
+			want: func(b []byte) []string {
+				buffer := NewBuffer(b)
+
+				int32s := make([]int32, 0)
+				buffer.ReadLittle(int32s)
+
+				strs := make([]string, len(int32s))
+				for i := range int32s {
+					strs[i] = strconv.Itoa(int(int32s[i]))
+				}
+
+				return strs
+			}([]byte{0x30, 0x31, 0x32, 0x33}),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := BytesToInt32(tt.args.raw)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("BytesToInt32() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("BytesToInt32() = %v, want %v", got, tt.want)
+			} else {
+				t.Logf("result: %v", got)
+			}
+		})
+	}
+}
+func BenchmarkByteToInt322(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		BytesToInt32(byteToInt32)
+	}
+}
+
+func TestBytesToInt16(t *testing.T) {
+	type args struct {
+		raw []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []string
+		wantErr bool
+	}{
+		{
+			name: "1",
+			args: args{
+				raw: []byte{0x00, 0x01},
+			},
+			want:    []string{"4"},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := BytesToInt16(tt.args.raw)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("BytesToInt16() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("BytesToInt16() = %v, want %v", got, tt.want)
 			}
 		})
 	}

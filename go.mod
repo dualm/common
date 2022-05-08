@@ -3,7 +3,6 @@ module github.com/dualm/common
 go 1.18
 
 require (
-	github.com/dualm/ethernet-ip v0.1.1
 	github.com/spf13/viper v1.11.0
 	github.com/ugorji/go/codec v1.2.7
 )
