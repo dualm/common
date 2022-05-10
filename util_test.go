@@ -2,7 +2,6 @@ package common
 
 import (
 	"reflect"
-	"strconv"
 	"testing"
 )
 
@@ -18,7 +17,7 @@ func TestTrimByteToString(t *testing.T) {
 		{
 			name: "1",
 			args: args{
-				b: []byte{0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x52, 0x30, 0x32, 0x39},
+				b: []byte{0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x52, 0x30, 0x32, 0x39, 0x20},
 			},
 			want: "R029",
 		},
@@ -44,7 +43,6 @@ func TestBytesToAscii(t *testing.T) {
 		want    []string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name: "1",
 			args: args{
@@ -473,7 +471,8 @@ func TestBytesToAscii(t *testing.T) {
 
 func TestBytesToInt32(t *testing.T) {
 	type args struct {
-		raw []byte
+		raw   []byte
+		count int
 	}
 	tests := []struct {
 		name    string
@@ -484,27 +483,16 @@ func TestBytesToInt32(t *testing.T) {
 		{
 			name: "1",
 			args: args{
-				raw: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+				raw:   []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+				count: 2,
 			},
-			want: func(b []byte) []string {
-				buffer := NewBuffer(b)
-
-				int32s := make([]int32, 0)
-				buffer.ReadLittle(int32s)
-
-				strs := make([]string, len(int32s))
-				for i := range int32s {
-					strs[i] = strconv.Itoa(int(int32s[i]))
-				}
-
-				return strs
-			}([]byte{0x30, 0x31, 0x32, 0x33}),
+			want:    []string{"0", "0"},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := BytesToInt32(tt.args.raw)
+			got, err := BytesToInt32(tt.args.raw, tt.args.count)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BytesToInt32() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -517,15 +505,19 @@ func TestBytesToInt32(t *testing.T) {
 		})
 	}
 }
+
+var byteToInt32 = []byte{0x00, 0x01, 0x02, 0x03, 0x00, 0x01, 0x02, 0x03}
+
 func BenchmarkByteToInt322(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		BytesToInt32(byteToInt32)
+		BytesToInt32(byteToInt32, 1)
 	}
 }
 
 func TestBytesToInt16(t *testing.T) {
 	type args struct {
-		raw []byte
+		raw   []byte
+		count int
 	}
 	tests := []struct {
 		name    string
@@ -536,21 +528,171 @@ func TestBytesToInt16(t *testing.T) {
 		{
 			name: "1",
 			args: args{
-				raw: []byte{0x00, 0x01},
+				raw:   []byte{0x00, 0x01},
+				count: 1,
 			},
-			want:    []string{"4"},
+			want:    []string{"256"},
+			wantErr: false,
+		},
+		{
+			name: "2",
+			args: args{
+				raw:   []byte{0x00, 0x01, 0x01, 0x00},
+				count: 2,
+			},
+			want:    []string{"256", "1"},
+			wantErr: false,
+		},
+		{
+			name: "3",
+			args: args{
+				raw:   []byte{0x00, 0x01, 0x01},
+				count: 2,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "4",
+			args: args{
+				raw:   []byte{0x00, 0x01, 0x01, 0x00},
+				count: 1,
+			},
+			want:    []string{"256"},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := BytesToInt16(tt.args.raw)
+			got, err := BytesToInt16(tt.args.raw, tt.args.count)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("BytesToInt16() = %v, want %v", got, tt.want)
+			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BytesToInt16() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
+		})
+	}
+}
+
+func TestBytesToFloat32(t *testing.T) {
+	type args struct {
+		raw   []byte
+		count int
+		prec  int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []string
+		wantErr bool
+	}{
+		{
+			name: "1",
+			args: args{
+				raw:   []byte{0x14, 0xAE, 0xD9, 0x41},
+				count: 1,
+				prec:  3,
+			},
+			want:    []string{"27.210"},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := BytesToFloat32(tt.args.raw, tt.args.count, tt.args.prec)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("BytesToFloat32() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BytesToInt16() = %v, want %v", got, tt.want)
+				t.Errorf("BytesToFloat32() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStringToByteByLength(t *testing.T) {
+	type args struct {
+		s      string
+		length int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{
+			name: "1",
+			args: args{
+				s:      "Hello",
+				length: 20,
+			},
+			want: []byte("Hello               "),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := StringToByteByLength(tt.args.s, tt.args.length); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("StringToByteByLength() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTrim(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "1",
+			args: args{
+				s: " Hello, World=.",
+			},
+			want: "Hello, World",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Trim(tt.args.s); got != tt.want {
+				t.Errorf("Trim() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTrimMap(t *testing.T) {
+	type args struct {
+		s map[string]string
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[string]string
+	}{
+	{
+		name: "1",
+		args: args{
+			s: map[string]string{
+				"1": "Hello World.",
+			},
+		},
+		want: map[string]string{
+			"1": "Hello World",
+		},
+	},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := TrimMap(tt.args.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("TrimMap() = %v, want %v", got, tt.want)
 			}
 		})
 	}

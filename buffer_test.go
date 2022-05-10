@@ -160,4 +160,3 @@ func TestBuffer_Reset(t *testing.T) {
 	}
 }
 
-var byteToInt32 = []byte{0x00, 0x01, 0x02, 0x03}

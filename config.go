@@ -14,9 +14,21 @@ func GetString(conf *viper.Viper, node, key string) string {
 	return conf.GetString(makeKey(nodes))
 }
 
+func GetSliceNodeString(conf *viper.Viper, nodes []string, key string) string {
+	nodes = append(nodes, key)
+
+	return conf.GetString(makeKey(nodes))
+}
+
 func GetInt(conf *viper.Viper, node, key string) int {
 	nodes := makeNodes(node)
 
+	nodes = append(nodes, key)
+
+	return conf.GetInt(makeKey(nodes))
+}
+
+func GetSliceNodeInt(conf *viper.Viper, nodes []string, key string) int {
 	nodes = append(nodes, key)
 
 	return conf.GetInt(makeKey(nodes))
@@ -30,9 +42,21 @@ func GetStringSlice(conf *viper.Viper, node, key string) []string {
 	return conf.GetStringSlice(makeKey(nodes))
 }
 
+func GetSliceNodeStringSlice(conf *viper.Viper, nodes []string, key string) []string {
+	nodes = append(nodes, key)
+
+	return conf.GetStringSlice(makeKey(nodes))
+}
+
 func GetBool(conf *viper.Viper, node, key string) bool {
 	nodes := makeNodes(node)
 
+	nodes = append(nodes, key)
+
+	return conf.GetBool(makeKey(nodes))
+}
+
+func GetSliceNodeBool(conf *viper.Viper, nodes []string, key string) bool {
 	nodes = append(nodes, key)
 
 	return conf.GetBool(makeKey(nodes))
