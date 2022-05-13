@@ -55,11 +55,17 @@ func (b *Buffer) Put() {
 
 // NewBuffer，从buffer池中取出并重置一个Buffer实例，将data写入后返回. data可以为nil.
 func NewBuffer(data []byte) *Buffer {
+	b := NewEmptyBuffer()
+
+	b.buffer.Write(data)
+
+	return b
+}
+
+func NewEmptyBuffer() *Buffer {
 	b := eipPool.Get().(*Buffer)
 
 	b.Reset()
-
-	b.buffer.Write(data)
 
 	return b
 }

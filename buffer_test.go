@@ -7,6 +7,7 @@ import (
 )
 
 var bs = []byte{0x01, 0x00}
+var bs2 = make([]byte, 0)
 
 func TestNew(t *testing.T) {
 
@@ -50,9 +51,16 @@ func TestNew(t *testing.T) {
 
 func BenchmarkNewFromPool(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		b := NewBuffer(bs)
+		b := NewBuffer(nil)
 		b.WriteLittle(uint8(0))
-		b.Reset()
+		b.Put()
+	}
+}
+
+func BenchmarkNewEmptyFromPool(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b := NewEmptyBuffer()
+		b.WriteLittle(uint8(0))
 		b.Put()
 	}
 }
@@ -159,4 +167,3 @@ func TestBuffer_Reset(t *testing.T) {
 		})
 	}
 }
-
