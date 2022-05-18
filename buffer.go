@@ -18,7 +18,7 @@ func (b *Buffer) WriteLittle(target interface{}) {
 }
 
 func (b *Buffer) WriteBig(target interface{}) {
-	b.err = binary.Write(b.buffer, binary.LittleEndian, target)
+	b.err = binary.Write(b.buffer, binary.BigEndian, target)
 }
 
 func (b *Buffer) ReadBig(target interface{}) {
