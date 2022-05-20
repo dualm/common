@@ -71,8 +71,40 @@ func (eqp *Equipment) Clear() error {
 	eqp.ProductType = ""
 	eqp.ProductionType = ""
 	eqp.ProductSpecName = ""
+	eqp.SubName = make([]string, 0)
 
 	return eqp.serialize("clear")
+}
+
+func (eqp *Equipment) SubOut(subId string) error {
+	if len(eqp.SubName) == 0 {
+		return fmt.Errorf("no sub products in %s", eqp.MachineName)
+	}
+
+	eqp.lock.Lock()
+	defer eqp.lock.Unlock()
+
+	var contains bool
+
+	newSub := make([]string, 0, len(eqp.SubName)-1)
+
+	for i := range eqp.SubName {
+		if eqp.SubName[i] == subId {
+			contains = true
+
+			continue
+		}
+
+		newSub = append(newSub, eqp.SubName[i])
+	}
+
+	if !contains {
+		return fmt.Errorf("sub product id not exist")
+	}
+
+	eqp.SubName = newSub
+
+	return eqp.serialize("sub out")
 }
 
 func (eqp *Equipment) CommEnable() bool {
