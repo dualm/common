@@ -7,7 +7,6 @@ import (
 )
 
 var bs = []byte{0x01, 0x00}
-var bs2 = make([]byte, 0)
 
 func TestNew(t *testing.T) {
 

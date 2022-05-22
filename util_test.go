@@ -510,7 +510,7 @@ var byteToInt32 = []byte{0x00, 0x01, 0x02, 0x03, 0x00, 0x01, 0x02, 0x03}
 
 func BenchmarkByteToInt322(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		BytesToInt32(byteToInt32, 1)
+		_, _ = BytesToInt32(byteToInt32, 1)
 	}
 }
 
@@ -677,17 +677,17 @@ func TestTrimMap(t *testing.T) {
 		args args
 		want map[string]string
 	}{
-	{
-		name: "1",
-		args: args{
-			s: map[string]string{
-				"1": "Hello World.",
+		{
+			name: "1",
+			args: args{
+				s: map[string]string{
+					"1": "Hello World.",
+				},
+			},
+			want: map[string]string{
+				"1": "Hello World",
 			},
 		},
-		want: map[string]string{
-			"1": "Hello World",
-		},
-	},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

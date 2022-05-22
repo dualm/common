@@ -1,18 +1,19 @@
 package common
 
 import (
-	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/spf13/viper"
 )
 
-var v, _ = InitConfig("config")
-
-var e7conf, _ = InitConfig("e7")
+var v, _ = InitConfig("config", "./test")
 
 func TestGetString(t *testing.T) {
+	e7conf, err := InitConfig("e7", "./test")
+	if err != nil {
+		t.Error(err)
+	}
+
 	type args struct {
 		conf  *viper.Viper
 		nodes string
@@ -49,19 +50,6 @@ func TestGetString(t *testing.T) {
 			}
 		})
 	}
-}
-
-func InitConfig(configId string) (*viper.Viper, error) {
-	conf := viper.New()
-	conf.SetConfigType("toml")
-	conf.SetConfigName(strings.ToLower(configId))
-	conf.AddConfigPath("./test")
-	err := conf.ReadInConfig()
-	if err != nil {
-		return nil, fmt.Errorf("initialize config error, ConfigId: %s, Error:%w", configId, err)
-	}
-
-	return conf, nil
 }
 
 func Test_makeKey(t *testing.T) {
@@ -105,6 +93,11 @@ func Test_makeKey(t *testing.T) {
 }
 
 func TestGetSliceNodeString(t *testing.T) {
+	e7conf, err := InitConfig("e7", "./test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	type args struct {
 		conf  *viper.Viper
 		nodes []string
@@ -144,6 +137,11 @@ func TestGetSliceNodeString(t *testing.T) {
 }
 
 func TestGetSliceNodeInt(t *testing.T) {
+	e7conf, err := InitConfig("e7", "./test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	type args struct {
 		conf  *viper.Viper
 		nodes []string
@@ -183,6 +181,11 @@ func TestGetSliceNodeInt(t *testing.T) {
 }
 
 func TestGetInt(t *testing.T) {
+	e7conf, err := InitConfig("e7", "./test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	type args struct {
 		conf *viper.Viper
 		node string
@@ -231,6 +234,11 @@ func TestGetInt(t *testing.T) {
 }
 
 func TestGetBool(t *testing.T) {
+	e7conf, err := InitConfig("e7", "./test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	type args struct {
 		conf *viper.Viper
 		node string

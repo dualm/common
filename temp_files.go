@@ -49,10 +49,10 @@ func GetFile(dir, pattern string, readOnly bool) (*os.File, error) {
 
 	if len(matches) == 1 {
 		if readOnly {
-			return os.OpenFile(matches[0], os.O_RDONLY, 644)
+			return os.OpenFile(matches[0], os.O_RDONLY, 0644)
 		}
 
-		return os.OpenFile(matches[0], os.O_RDONLY|os.O_TRUNC, 644)
+		return os.OpenFile(matches[0], os.O_RDONLY|os.O_TRUNC, 0644)
 	}
 
 	for _, match := range matches {

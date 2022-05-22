@@ -183,7 +183,7 @@ func (eqp *Equipment) CustomSet(key string) interface{} {
 }
 
 func (eqp *Equipment) serialize(fieldName string) error {
-	_f, err := os.OpenFile(eqp.cachePath, os.O_WRONLY|os.O_TRUNC, 600)
+	_f, err := os.OpenFile(eqp.cachePath, os.O_WRONLY|os.O_TRUNC, 0600)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -84,4 +85,18 @@ func makeNodes(node string) []string {
 	}
 
 	return nodes
+}
+
+func InitConfig(configId, configPath string) (*viper.Viper, error) {
+	conf := viper.New()
+
+	conf.SetConfigType("toml")
+	conf.SetConfigName(strings.ToLower(configId))
+	conf.AddConfigPath(configPath)
+	err := conf.ReadInConfig()
+	if err != nil {
+		return nil, fmt.Errorf("initialize config error, ConfigId: %s, Error:%w", configId, err)
+	}
+
+	return conf, nil
 }

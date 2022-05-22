@@ -10,7 +10,7 @@ func TestEquipment_Clear(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	eqp.SetMachineRecipeName("recipe")
+	_ = eqp.SetMachineRecipeName("recipe")
 
 	if err := eqp.Clear(); err != nil {
 		t.Fatal(err)
