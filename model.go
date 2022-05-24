@@ -156,9 +156,13 @@ func (eqp *Equipment) CustomItem(key string) string {
 	return ""
 }
 
-func (eqp *Equipment) SetCustom(key, value string) error {
+func (eqp *Equipment) SetCustomItem(key, value string) error {
 	eqp.lock.Lock()
 	defer eqp.lock.Unlock()
+	
+	if len(eqp.customItems) == 0 {
+		eqp.customItems = make(map[string]string)
+	}
 
 	eqp.customItems[key] = value
 
@@ -168,6 +172,10 @@ func (eqp *Equipment) SetCustom(key, value string) error {
 func (eqp *Equipment) SetCustomSet(key string, value interface{}) error {
 	eqp.lock.Lock()
 	defer eqp.lock.Unlock()
+
+	if len(eqp.customSet) == 0 {
+		eqp.customSet = map[string]interface{}{}
+	}
 
 	eqp.customSet[key] = value
 
