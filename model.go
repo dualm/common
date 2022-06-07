@@ -72,6 +72,7 @@ func (eqp *Equipment) Clear() error {
 	eqp.ProductType = ""
 	eqp.ProductionType = ""
 	eqp.ProductSpecName = ""
+	eqp.ProcessFlowName = ""
 	eqp.SubName = make([]string, 0)
 
 	return eqp.serialize("clear")
