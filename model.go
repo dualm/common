@@ -28,6 +28,7 @@ type Equipment struct {
 	ProductType     string
 	ProductionType  string
 	ProductSpecName string
+	ProcessFlowName string
 	// step id
 	ProcessOperationName string
 	machineRecipeName    string
@@ -159,7 +160,7 @@ func (eqp *Equipment) CustomItem(key string) string {
 func (eqp *Equipment) SetCustomItem(key, value string) error {
 	eqp.lock.Lock()
 	defer eqp.lock.Unlock()
-	
+
 	if len(eqp.customItems) == 0 {
 		eqp.customItems = make(map[string]string)
 	}
