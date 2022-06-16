@@ -21,7 +21,13 @@ func TestTrimByteToString(t *testing.T) {
 			},
 			want: "R029",
 		},
-	}
+		{
+			name: "2",
+			args: args{
+				b: []byte{0x41, 0x00, 0x42, 0x43},
+			},
+			want: "ABC",
+		}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := TrimByteToString(tt.args.b); got != tt.want {
@@ -693,6 +699,79 @@ func TestTrimMap(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := TrimMap(tt.args.s); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("TrimMap() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTrimLittleEndianUint16ToString(t *testing.T) {
+	type args struct {
+		b []byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "1",
+			args: args{
+				b: []byte{0x41, 0x42},
+			},
+			want: "BA",
+		},
+		{
+			name: "2",
+			args: args{
+				b: []byte{0x42, 0x41, 0x44, 0x43},
+			},
+			want: "ABCD",
+		},
+		{
+			name: "3",
+			args: args{
+				b: []byte{0x42, 0x41, 0x44},
+			},
+			want: "ABD",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := TrimLittleEndianUint16ToString(tt.args.b); got != tt.want {
+				t.Errorf("TrimLittleEndianUint16ToString() = %v, want %v\n", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTrimBigEndianUint16ToString(t *testing.T) {
+	type args struct {
+		b []byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "1",
+			args: args{
+				b: []uint8{0x41, 0x42},
+			},
+			want: "AB",
+		},
+		{
+			name: "2",
+			args: args{
+				b: []uint8{0x41, 0x42, 0x43, 0x44},
+			},
+			want: "ABCD",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := TrimBigEndianUint16ToString(tt.args.b); got != tt.want {
+				t.Errorf("TrimBigEndianUint16ToString() = %v, want %v", got, tt.want)
 			}
 		})
 	}
