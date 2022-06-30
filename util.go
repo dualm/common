@@ -94,7 +94,7 @@ func TrimByteToString(b []byte) string {
 	_b := make([]byte, 0, len(b))
 
 	for i := range b {
-		if unicode.IsLetter(rune(b[i])) || unicode.IsNumber(rune(b[i])) {
+		if unicode.IsLetter(rune(b[i])) || unicode.IsNumber(rune(b[i])) || unicode.IsPunct(rune(b[i])) {
 			_b = append(_b, b[i])
 		}
 	}

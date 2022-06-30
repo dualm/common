@@ -39,9 +39,9 @@ func TestTrimByteToString(t *testing.T) {
 
 func TestBytesToAscii(t *testing.T) {
 	type args struct {
-		raw       []byte
-		count     int
-		charCount int
+		raw        []byte
+		count      int
+		charCount  int
 	}
 	tests := []struct {
 		name    string
